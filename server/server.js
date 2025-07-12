@@ -5,7 +5,10 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 
-console.log('🚀 MINIMAL SERVER STARTING - NO FILE DEPENDENCIES');
+console.log('🚀 LATEST MINIMAL SERVER - NO FILE DEPENDENCIES - COMMIT 924a456');
+console.log('✅ This server has ZERO file dependencies');
+console.log('✅ No more ENOENT errors possible');
+console.log('✅ Serving embedded HTML only');
 
 const app = express();
 const server = http.createServer(app);
