@@ -250,13 +250,105 @@ app.get('*', (req, res) => {
     res.sendFile(indexHtmlPath);
   } else {
     console.log('❌ Client build not found!');
-    res.json({ 
-      message: 'Server is running but client build is not ready yet. Please wait a moment and refresh.',
-      status: 'error',
-      clientBuildPath: publicPath,
-      clientBuildExists: fs.existsSync(publicPath),
-      availableDirectories: fs.readdirSync(path.join(__dirname, '..'))
-    });
+    console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
+    
+    // Serve a basic HTML page with Socket.io chat functionality
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Socket.io Chat</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          #messages { height: 400px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; margin: 10px 0; background: #fafafa; border-radius: 4px; }
+          #messageInput { width: 70%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+          #sendButton { padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+          #sendButton:hover { background: #0056b3; }
+          .user-input { margin-bottom: 15px; }
+          .user-input input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px; }
+          .user-input button { padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+          .user-input button:hover { background: #1e7e34; }
+          .status { color: #666; font-style: italic; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Socket.io Chat</h1>
+          <div class="user-input">
+            <input type="text" id="username" placeholder="Enter your username" />
+            <button onclick="joinChat()">Join Chat</button>
+          </div>
+          <div id="messages"></div>
+          <div>
+            <input type="text" id="messageInput" placeholder="Type your message..." />
+            <button id="sendButton" onclick="sendMessage()">Send</button>
+          </div>
+          <p class="status">Server is running. Client build will be available soon.</p>
+        </div>
+        <script>
+          const socket = io();
+          let username = '';
+          let isJoined = false;
+          
+          function joinChat() {
+            username = document.getElementById('username').value.trim();
+            if (username) {
+              socket.emit('user_join', username);
+              document.getElementById('username').disabled = true;
+              document.querySelector('.user-input button').disabled = true;
+              isJoined = true;
+              addMessage('System', 'You joined the chat');
+            }
+          }
+          
+          function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            if (message && isJoined) {
+              socket.emit('send_message', { message });
+              messageInput.value = '';
+            }
+          }
+          
+          function addMessage(sender, message) {
+            const messagesDiv = document.getElementById('messages');
+            const messageElement = document.createElement('p');
+            messageElement.innerHTML = '<strong>' + sender + ':</strong> ' + message;
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          }
+          
+          socket.on('receive_message', (data) => {
+            addMessage(data.sender, data.message);
+          });
+          
+          socket.on('user_joined', (data) => {
+            if (data.username !== username) {
+              addMessage('System', data.username + ' joined the chat');
+            }
+          });
+          
+          socket.on('user_left', (data) => {
+            addMessage('System', data.username + ' left the chat');
+          });
+          
+          document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              sendMessage();
+            }
+          });
+          
+          document.getElementById('username').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              joinChat();
+            }
+          });
+        </script>
+      </body>
+      </html>
+    `);
   }
 });
 
