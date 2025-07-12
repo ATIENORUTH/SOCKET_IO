@@ -26,22 +26,28 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// Check if client build exists
+// Check if client build exists - try public first, then client/dist
 const publicPath = path.join(__dirname, '../public');
-const indexHtmlPath = path.join(publicPath, 'index.html');
+const clientDistPath = path.join(__dirname, '../client/dist');
+const indexHtmlPath = fs.existsSync(publicPath) ? path.join(publicPath, 'index.html') : path.join(clientDistPath, 'index.html');
 
 console.log('Checking for client build...');
 console.log('Public path:', publicPath);
+console.log('Client dist path:', clientDistPath);
 console.log('Index HTML path:', indexHtmlPath);
 console.log('Public directory exists:', fs.existsSync(publicPath));
+console.log('Client dist exists:', fs.existsSync(clientDistPath));
 console.log('Index HTML exists:', fs.existsSync(indexHtmlPath));
 
-// Serve static files from the public folder if it exists
+// Serve static files from the public folder if it exists, otherwise from client/dist
 if (fs.existsSync(publicPath)) {
   app.use(express.static(publicPath));
   console.log('✅ Serving static files from:', publicPath);
+} else if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  console.log('✅ Serving static files from:', clientDistPath);
 } else {
-  console.log('❌ Public directory not found, serving API only');
+  console.log('❌ Neither public nor client/dist directory found, serving API only');
   console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
 }
 
