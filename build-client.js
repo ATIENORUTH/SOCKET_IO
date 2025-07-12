@@ -2,30 +2,49 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Building client...');
+console.log('🚀 Starting client build process...');
 
 try {
-  // Install client dependencies
-  console.log('📦 Installing client dependencies...');
-  execSync('cd client && npm install --production=false', { stdio: 'inherit' });
-
-  // Build client
-  console.log('🔨 Building client...');
-  execSync('cd client && npm run build', { stdio: 'inherit' });
-
-  // Create public directory
-  console.log('📋 Creating public directory...');
-  if (!fs.existsSync('public')) {
-    fs.mkdirSync('public', { recursive: true });
+  // Check if client directory exists
+  const clientDir = path.join(__dirname, 'client');
+  if (!fs.existsSync(clientDir)) {
+    throw new Error('Client directory not found');
   }
 
-  // Copy files
-  console.log('📋 Copying build files...');
-  execSync('cp -r client/dist/* public/', { stdio: 'inherit' });
+  console.log('📁 Installing client dependencies...');
+  execSync('npm install --production=false', { 
+    cwd: clientDir, 
+    stdio: 'inherit' 
+  });
 
-  console.log('✅ Build completed successfully!');
-  console.log('📁 Public directory contents:');
-  console.log(fs.readdirSync('public'));
+  console.log('🔨 Building client...');
+  execSync('npm run build', { 
+    cwd: clientDir, 
+    stdio: 'inherit' 
+  });
+
+  // Check if dist directory was created
+  const distDir = path.join(clientDir, 'dist');
+  if (!fs.existsSync(distDir)) {
+    throw new Error('Client build failed - dist directory not found');
+  }
+
+  console.log('📁 Creating public directory...');
+  const publicDir = path.join(__dirname, 'public');
+  if (fs.existsSync(publicDir)) {
+    fs.rmSync(publicDir, { recursive: true, force: true });
+  }
+  fs.mkdirSync(publicDir, { recursive: true });
+
+  console.log('📋 Copying build files to public...');
+  execSync('cp -r dist/* ../public/', { 
+    cwd: clientDir, 
+    stdio: 'inherit' 
+  });
+
+  console.log('✅ Client build completed successfully!');
+  console.log('📂 Public directory contents:');
+  execSync('ls -la public/', { stdio: 'inherit' });
 
 } catch (error) {
   console.error('❌ Build failed:', error.message);
