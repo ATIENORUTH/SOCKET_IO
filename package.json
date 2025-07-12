@@ -7,6 +7,7 @@
     "start": "node start-app.js",
     "server": "node server/server.js",
     "build": "node build-vercel.js",
+    "build-simple": "node build-simple.js",
     "vercel-build": "node build-vercel.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "cd client && npm run dev",
