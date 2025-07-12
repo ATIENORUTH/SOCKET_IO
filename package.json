@@ -4,6 +4,7 @@
   "description": "Real-time chat application with Socket.io",
   "main": "server/server.js",
   "scripts": {
+    "postinstall": "node pre-build.js",
     "prestart": "node pre-build.js",
     "start": "node server/server.js",
     "server": "node server/server.js",
