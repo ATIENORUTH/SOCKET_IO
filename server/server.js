@@ -180,8 +180,8 @@ app.get('*', (req, res) => {
   console.log('Client index path:', clientIndexPath);
   console.log('Client index exists:', fs.existsSync(clientIndexPath));
   
-  // TEMPORARY: Force fallback for testing (remove this line to use normal behavior)
-  const forceFallback = process.env.FORCE_FALLBACK === 'true';
+  // FORCE FALLBACK FOR NOW - Remove this to use React build when ready
+  const forceFallback = true; // process.env.FORCE_FALLBACK === 'true';
   
   if (fs.existsSync(clientIndexPath) && !forceFallback) {
     console.log('✅ Serving from client-dist/index.html');
