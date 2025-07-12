@@ -5,7 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "build": "cd client && npm install && npm run build && cd .. && mkdir -p public && cp -r client/dist/* public/",
+    "build": "node build-client.js",
     "dev": "cd client && npm run dev"
   },
   "keywords": ["socket.io", "chat", "real-time"],
