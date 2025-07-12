@@ -64,82 +64,8 @@ if (fs.existsSync(publicPath)) {
   app.use(express.static(clientDistPath));
   console.log('✅ Serving static files from:', clientDistPath);
 } else {
-  console.log('❌ Neither public nor client/dist directory found, serving API only');
+  console.log('❌ Neither public nor client/dist directory found, serving fallback HTML');
   console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
-  
-  // Fallback: Serve a simple HTML page with basic chat functionality
-  app.get('/', (req, res) => {
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Socket.io Chat</title>
-        <script src="/socket.io/socket.io.js"></script>
-        <style>
-          body { font-family: Arial, sans-serif; margin: 20px; }
-          #messages { height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
-          #messageInput { width: 80%; padding: 5px; }
-          #sendButton { padding: 5px 10px; }
-        </style>
-      </head>
-      <body>
-        <h1>Socket.io Chat</h1>
-        <div>
-          <input type="text" id="username" placeholder="Enter username" />
-          <button onclick="joinChat()">Join Chat</button>
-        </div>
-        <div id="messages"></div>
-        <div>
-          <input type="text" id="messageInput" placeholder="Type your message..." />
-          <button id="sendButton" onclick="sendMessage()">Send</button>
-        </div>
-        <script>
-          const socket = io();
-          let username = '';
-          
-          function joinChat() {
-            username = document.getElementById('username').value;
-            if (username.trim()) {
-              socket.emit('user_join', username);
-              document.getElementById('username').disabled = true;
-            }
-          }
-          
-          function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value;
-            if (message.trim() && username) {
-              socket.emit('send_message', { message });
-              messageInput.value = '';
-            }
-          }
-          
-          socket.on('receive_message', (data) => {
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML += '<p><strong>' + data.sender + ':</strong> ' + data.message + '</p>';
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-          });
-          
-          socket.on('user_joined', (data) => {
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML += '<p><em>' + data.username + ' joined the chat</em></p>';
-          });
-          
-          socket.on('user_left', (data) => {
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML += '<p><em>' + data.username + ' left the chat</em></p>';
-          });
-          
-          document.getElementById('messageInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-              sendMessage();
-            }
-          });
-        </script>
-      </body>
-      </html>
-    `);
-  });
 }
 
 // Store connected users and messages
