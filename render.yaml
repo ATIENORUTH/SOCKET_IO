@@ -14,4 +14,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://socket-io-4-no7f.onrender.com
+        value: https://week-5-web-sockets-assignment-atienoruth-ni3b.onrender.com
