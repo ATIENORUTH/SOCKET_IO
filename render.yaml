@@ -3,13 +3,11 @@ services:
     name: socket-io-chat
     env: node
     buildCommand: |
-      cd client
       npm install
-      npm run build
-      cd ..
-      npm install
-      node build-and-copy.js
-    startCommand: cd server && npm install && npm start
+      cd client && npm install && npm run build && cd ..
+      mkdir -p public
+      cp -r client/dist/* public/
+    startCommand: node server/server.js
     envVars:
       - key: NODE_ENV
         value: production
