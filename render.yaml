@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: socket-io-chat
+    name: week-5-web-sockets-assignment-ATIENORUTH-2
     env: node
     buildCommand: npm install && cd client && npm install && npm run build && cd .. && cp -r client/dist client-dist
     startCommand: |
@@ -13,4 +13,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://week-5-web-sockets-assignment-atienoruth-qcvu.onrender.com
+        value: https://week-5-web-sockets-assignment-atienoruth-03k5.onrender.com
