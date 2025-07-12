@@ -30,12 +30,19 @@ app.use(express.json());
 const clientBuildPath = path.join(__dirname, '../client/dist');
 const indexHtmlPath = path.join(clientBuildPath, 'index.html');
 
+console.log('Checking for client build...');
+console.log('Client build path:', clientBuildPath);
+console.log('Index HTML path:', indexHtmlPath);
+console.log('Client build exists:', fs.existsSync(clientBuildPath));
+console.log('Index HTML exists:', fs.existsSync(indexHtmlPath));
+
 // Serve static files from the React app if build exists
 if (fs.existsSync(clientBuildPath)) {
   app.use(express.static(clientBuildPath));
-  console.log('Serving client build from:', clientBuildPath);
+  console.log('✅ Serving client build from:', clientBuildPath);
 } else {
-  console.log('Client build not found, serving API only');
+  console.log('❌ Client build not found, serving API only');
+  console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
 }
 
 // Store connected users and messages
@@ -132,7 +139,12 @@ app.get('/api/users', (req, res) => {
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    clientBuildExists: fs.existsSync(clientBuildPath),
+    clientBuildPath: clientBuildPath
+  });
 });
 
 // Serve React app for all other routes if build exists
@@ -142,7 +154,10 @@ app.get('*', (req, res) => {
   } else {
     res.json({ 
       message: 'Server is running but client build is not ready yet. Please wait a moment and refresh.',
-      status: 'building'
+      status: 'building',
+      clientBuildPath: clientBuildPath,
+      clientBuildExists: fs.existsSync(clientBuildPath),
+      availableDirectories: fs.readdirSync(path.join(__dirname, '..'))
     });
   }
 });
