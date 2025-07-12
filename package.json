@@ -1,15 +1,14 @@
 {
-  "name": "socket-io-chat-app",
+  "name": "socket-io-chat",
   "version": "1.0.0",
-  "description": "Socket.IO Chat Application",
+  "description": "Real-time chat application with Socket.io",
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "build": "node build-client.js",
-    "build:render": "node render-build.js",
-    "build:simple": "node simple-build.js",
-    "build:deploy": "node build-and-deploy.js",
-    "dev": "cd client && npm run dev"
+    "dev": "nodemon server/server.js",
+    "build": "npm install && cd client && npm install && npm run build && cd .. && cp -r client/dist ./client-dist",
+    "build-client": "cd client && npm install && npm run build",
+    "build-server": "npm install"
   },
   "keywords": ["socket.io", "chat", "real-time"],
   "author": "",
@@ -19,5 +18,8 @@
     "socket.io": "^4.7.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 } 
