@@ -4,6 +4,37 @@ const path = require('path');
 
 console.log('🚀 Starting client build process...');
 
+function copyRecursiveSync(src, dest) {
+  try {
+    // Ensure destination directory exists
+    const destDir = path.dirname(dest);
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+    
+    // If destination exists, remove it first
+    if (fs.existsSync(dest)) {
+      if (fs.lstatSync(dest).isDirectory()) {
+        fs.rmSync(dest, { recursive: true, force: true });
+      } else {
+        fs.unlinkSync(dest);
+      }
+    }
+    
+    if (fs.lstatSync(src).isDirectory()) {
+      fs.mkdirSync(dest, { recursive: true });
+      fs.readdirSync(src).forEach(child => {
+        copyRecursiveSync(path.join(src, child), path.join(dest, child));
+      });
+    } else {
+      fs.copyFileSync(src, dest);
+    }
+  } catch (error) {
+    console.error(`Error copying ${src} to ${dest}:`, error.message);
+    throw error;
+  }
+}
+
 try {
   // Check if client directory exists
   const clientDir = path.join(__dirname, 'client');
@@ -37,14 +68,11 @@ try {
   fs.mkdirSync(publicDir, { recursive: true });
 
   console.log('📋 Copying build files to public...');
-  execSync('cp -r dist/* ../public/', { 
-    cwd: clientDir, 
-    stdio: 'inherit' 
-  });
+  copyRecursiveSync(distDir, publicDir);
 
   console.log('✅ Client build completed successfully!');
   console.log('📂 Public directory contents:');
-  execSync('ls -la public/', { stdio: 'inherit' });
+  console.log(fs.readdirSync(publicDir));
 
 } catch (error) {
   console.error('❌ Build failed:', error.message);
