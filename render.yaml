@@ -2,11 +2,7 @@ services:
   - type: web
     name: socket-io-chat
     env: node
-    buildCommand: |
-      npm install
-      cd client && npm install && npm run build && cd ..
-      mkdir -p public
-      cp -r client/dist/* public/
+    buildCommand: chmod +x build.sh && ./build.sh
     startCommand: node server/server.js
     envVars:
       - key: NODE_ENV
