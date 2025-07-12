@@ -8,4 +8,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://socket-io-3-hviq.onrender.com 
+        value: https://socket-io-4-no7f.onrender.com 
