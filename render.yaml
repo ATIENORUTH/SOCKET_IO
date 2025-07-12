@@ -2,10 +2,16 @@ services:
   - type: web
     name: socket-io-chat
     env: node
-    buildCommand: npm install && node build-and-copy.js
-    startCommand: npm start
+    buildCommand: |
+      cd client
+      npm install
+      npm run build
+      cd ..
+      npm install
+      node build-and-copy.js
+    startCommand: cd server && npm install && npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://socket-io-4-no7f.onrender.com 
+        value: https://socket-io-4-no7f.onrender.com
