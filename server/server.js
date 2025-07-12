@@ -27,21 +27,21 @@ app.use(cors());
 app.use(express.json());
 
 // Check if client build exists
-const clientBuildPath = path.join(__dirname, '../client/dist');
-const indexHtmlPath = path.join(clientBuildPath, 'index.html');
+const publicPath = path.join(__dirname, '../public');
+const indexHtmlPath = path.join(publicPath, 'index.html');
 
 console.log('Checking for client build...');
-console.log('Client build path:', clientBuildPath);
+console.log('Public path:', publicPath);
 console.log('Index HTML path:', indexHtmlPath);
-console.log('Client build exists:', fs.existsSync(clientBuildPath));
+console.log('Public directory exists:', fs.existsSync(publicPath));
 console.log('Index HTML exists:', fs.existsSync(indexHtmlPath));
 
-// Serve static files from the React app if build exists
-if (fs.existsSync(clientBuildPath)) {
-  app.use(express.static(clientBuildPath));
-  console.log('✅ Serving client build from:', clientBuildPath);
+// Serve static files from the public folder if it exists
+if (fs.existsSync(publicPath)) {
+  app.use(express.static(publicPath));
+  console.log('✅ Serving static files from:', publicPath);
 } else {
-  console.log('❌ Client build not found, serving API only');
+  console.log('❌ Public directory not found, serving API only');
   console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
 }
 
@@ -142,8 +142,8 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    clientBuildExists: fs.existsSync(clientBuildPath),
-    clientBuildPath: clientBuildPath
+    clientBuildExists: fs.existsSync(publicPath),
+    clientBuildPath: publicPath
   });
 });
 
@@ -167,8 +167,8 @@ app.get('*', (req, res) => {
       res.json({ 
         message: 'Server is running but client build is not ready yet. Please wait a moment and refresh.',
         status: 'error',
-        clientBuildPath: clientBuildPath,
-        clientBuildExists: fs.existsSync(clientBuildPath),
+        clientBuildPath: publicPath,
+        clientBuildExists: fs.existsSync(publicPath),
         availableDirectories: fs.readdirSync(path.join(__dirname, '..'))
       });
     }
@@ -180,7 +180,7 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Client build exists: ${fs.existsSync(clientBuildPath)}`);
+  console.log(`Client build exists: ${fs.existsSync(publicPath)}`);
 }).on('error', (err) => {
   console.error('Server error:', err);
   process.exit(1);
