@@ -26,7 +26,7 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// Check if client build exists - try public first, then client/dist
+// Check if client build exists
 const publicPath = path.join(__dirname, '../public');
 const clientDistPath = path.join(__dirname, '../client/dist');
 
@@ -35,11 +35,6 @@ console.log('Public path:', publicPath);
 console.log('Client dist path:', clientDistPath);
 console.log('Public directory exists:', fs.existsSync(publicPath));
 console.log('Client dist exists:', fs.existsSync(clientDistPath));
-
-// Also check the Render-specific path
-const renderClientPath = '/opt/render/project/src/client/dist';
-console.log('Render client path:', renderClientPath);
-console.log('Render client exists:', fs.existsSync(renderClientPath));
 
 // Debug: List all directories in the project root
 try {
@@ -63,25 +58,16 @@ console.log('Current working directory:', process.cwd());
 console.log('Environment:', process.env.NODE_ENV || 'development');
 console.log('Port:', process.env.PORT || 5000);
 
-// Serve static files from the public folder if it exists, otherwise from client/dist
-let staticFilesServed = false;
+// Serve static files from client/dist directory
+console.log('📁 Client dist path:', clientDistPath);
+console.log('📁 Client dist exists:', fs.existsSync(clientDistPath));
 
-if (fs.existsSync(publicPath)) {
-  app.use(express.static(publicPath));
-  console.log('✅ Serving static files from:', publicPath);
-  staticFilesServed = true;
-} else if (fs.existsSync(clientDistPath)) {
+if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   console.log('✅ Serving static files from:', clientDistPath);
-  staticFilesServed = true;
-} else if (fs.existsSync(renderClientPath)) {
-  app.use(express.static(renderClientPath));
-  console.log('✅ Serving static files from:', renderClientPath);
-  staticFilesServed = true;
 } else {
-  console.log('❌ No client build directories found, will serve fallback HTML');
+  console.log('❌ Client dist directory not found, will serve fallback HTML');
   console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
-  staticFilesServed = false;
 }
 
 // Store connected users and messages
@@ -181,37 +167,22 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    clientBuildExists: fs.existsSync(publicPath) || fs.existsSync(clientDistPath) || fs.existsSync(renderClientPath),
-    publicPath: publicPath,
-    clientDistPath: clientDistPath,
-    renderClientPath: renderClientPath
+    clientBuildExists: fs.existsSync(clientDistPath),
+    clientDistPath: clientDistPath
   });
 });
 
 // Serve React app for all other routes if build exists
 app.get('*', (req, res) => {
-  const publicIndexPath = path.join(publicPath, 'index.html');
   const clientIndexPath = path.join(clientDistPath, 'index.html');
-  const renderIndexPath = path.join(renderClientPath, 'index.html');
   
   console.log('Checking for index.html files...');
-  console.log('Public index path:', publicIndexPath);
   console.log('Client index path:', clientIndexPath);
-  console.log('Render index path:', renderIndexPath);
-  console.log('Public index exists:', fs.existsSync(publicIndexPath));
   console.log('Client index exists:', fs.existsSync(clientIndexPath));
-  console.log('Render index exists:', fs.existsSync(renderIndexPath));
   
-  // Try to serve from any available location
-  if (fs.existsSync(publicIndexPath)) {
-    console.log('✅ Serving from public/index.html');
-    res.sendFile(publicIndexPath);
-  } else if (fs.existsSync(clientIndexPath)) {
+  if (fs.existsSync(clientIndexPath)) {
     console.log('✅ Serving from client/dist/index.html');
     res.sendFile(clientIndexPath);
-  } else if (fs.existsSync(renderIndexPath)) {
-    console.log('✅ Serving from Render client/dist/index.html');
-    res.sendFile(renderIndexPath);
   } else {
     console.log('❌ No index.html found in any location, serving fallback HTML');
     console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
@@ -416,9 +387,7 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Public build exists: ${fs.existsSync(publicPath)}`);
   console.log(`Client dist exists: ${fs.existsSync(clientDistPath)}`);
-  console.log(`Render client exists: ${fs.existsSync(renderClientPath)}`);
 }).on('error', (err) => {
   console.error('Server error:', err);
   process.exit(1);
