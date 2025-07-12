@@ -3,7 +3,12 @@ services:
     name: socket-io-chat
     env: node
     buildCommand: npm install && cd client && npm install && npm run build && cd .. && cp -r client/dist client-dist
-    startCommand: node server/server.js
+    startCommand: |
+      echo "=== STARTING SERVER ==="
+      echo "Current directory: $(pwd)"
+      echo "Files in current directory: $(ls -la)"
+      echo "Starting server/server.js..."
+      node server/server.js
     envVars:
       - key: NODE_ENV
         value: production
