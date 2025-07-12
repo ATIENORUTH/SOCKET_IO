@@ -2,10 +2,10 @@ services:
   - type: web
     name: socket-io-chat
     env: node
-    buildCommand: chmod +x build.sh && ./build.sh
+    buildCommand: npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: CLIENT_URL
-        value: https://socket-io-2-aowx.onrender.com 
+        value: https://socket-io-3-hviq.onrender.com 

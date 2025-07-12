@@ -5,7 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "build": "npm install && cd server && npm install && cd ../client && npm install && npm run build && echo 'Build completed successfully!'",
+    "build": "echo '🚀 Starting build process...' && npm install && echo '📦 Installing server dependencies...' && cd server && npm install && echo '📦 Installing client dependencies...' && cd ../client && npm install && echo '🔨 Building client...' && npm run build && echo '✅ Build completed successfully!'",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
