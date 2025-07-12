@@ -58,7 +58,7 @@ console.log('Current working directory:', process.cwd());
 console.log('Environment:', process.env.NODE_ENV || 'development');
 console.log('Port:', process.env.PORT || 5000);
 
-// Serve static files from client/dist directory
+// Serve static files from client-dist directory
 console.log('📁 Client dist path:', clientDistPath);
 console.log('📁 Client dist exists:', fs.existsSync(clientDistPath));
 
@@ -184,7 +184,7 @@ app.get('*', (req, res) => {
   const forceFallback = process.env.FORCE_FALLBACK === 'true';
   
   if (fs.existsSync(clientIndexPath) && !forceFallback) {
-    console.log('✅ Serving from client/dist/index.html');
+    console.log('✅ Serving from client-dist/index.html');
     res.sendFile(clientIndexPath);
   } else {
     console.log('❌ No index.html found in any location, serving fallback HTML');
