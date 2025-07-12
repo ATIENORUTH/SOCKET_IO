@@ -4,10 +4,11 @@ services:
     env: node
     buildCommand: npm install && cd client && npm install && npm run build && cd .. && cp -r client/dist client-dist
     startCommand: |
-      echo "=== STARTING FRESH SERVER APP.JS ==="
-      echo "Current directory: $(pwd)"
-      echo "Files in current directory: $(ls -la)"
-      echo "Starting server/app.js..."
+      echo "=== FRESH SERVER APP.JS - NO CACHE - NO FILE DEPENDENCIES ==="
+      echo "✅ This is a completely new server file"
+      echo "✅ Zero file dependencies - embedded HTML only"
+      echo "=== FRESH SERVER APP.JS RUNNING ON PORT 10000 ==="
+      echo "✅ NO FILE DEPENDENCIES - EMBEDDED HTML ONLY"
       node server/app.js
     envVars:
       - key: NODE_ENV
