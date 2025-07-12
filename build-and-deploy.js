@@ -64,6 +64,30 @@ try {
   
   const publicContents = fs.readdirSync(publicPath);
   console.log('- Public contents:', publicContents);
+  
+  // Additional verification for Render deployment
+  console.log('🔍 Render deployment verification:');
+  console.log('- Current working directory:', process.cwd());
+  console.log('- Public path absolute:', path.resolve(publicPath));
+  console.log('- Index HTML absolute path:', path.resolve(indexHtmlPath));
+  
+  // List all files in public directory recursively
+  function listFilesRecursively(dir, prefix = '') {
+    const items = fs.readdirSync(dir);
+    items.forEach(item => {
+      const fullPath = path.join(dir, item);
+      const stat = fs.statSync(fullPath);
+      if (stat.isDirectory()) {
+        console.log(`${prefix}📁 ${item}/`);
+        listFilesRecursively(fullPath, prefix + '  ');
+      } else {
+        console.log(`${prefix}📄 ${item}`);
+      }
+    });
+  }
+  
+  console.log('📂 Public directory structure:');
+  listFilesRecursively(publicPath);
 
   console.log('🎉 Build and deployment preparation completed successfully!');
   console.log('📤 Ready for deployment to Render');

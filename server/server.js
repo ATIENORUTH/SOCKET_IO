@@ -39,6 +39,23 @@ console.log('Public directory exists:', fs.existsSync(publicPath));
 console.log('Client dist exists:', fs.existsSync(clientDistPath));
 console.log('Index HTML exists:', fs.existsSync(indexHtmlPath));
 
+// Debug: List all directories in the project root
+try {
+  const projectRoot = path.join(__dirname, '..');
+  console.log('Project root:', projectRoot);
+  console.log('Available directories in project root:', fs.readdirSync(projectRoot));
+  
+  if (fs.existsSync(publicPath)) {
+    console.log('Public directory contents:', fs.readdirSync(publicPath));
+  }
+  
+  if (fs.existsSync(clientDistPath)) {
+    console.log('Client dist directory contents:', fs.readdirSync(clientDistPath));
+  }
+} catch (error) {
+  console.error('Error listing directories:', error.message);
+}
+
 // Serve static files from the public folder if it exists, otherwise from client/dist
 if (fs.existsSync(publicPath)) {
   app.use(express.static(publicPath));
