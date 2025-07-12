@@ -30,49 +30,10 @@ console.log('🚀 NEW SERVER VERSION LOADED - NO MORE ENENT ERRORS!');
 console.log('✅ Server is configured to serve fallback HTML');
 console.log('✅ Chat application is ready!');
 
-// Check if client build exists
-const publicPath = path.join(__dirname, '../public');
-const clientDistPath = path.join(__dirname, '../client-dist');
-
-console.log('Checking for client build...');
-console.log('Public path:', publicPath);
-console.log('Client dist path:', clientDistPath);
-console.log('Public directory exists:', fs.existsSync(publicPath));
-console.log('Client dist exists:', fs.existsSync(clientDistPath));
-
-// Debug: List all directories in the project root
-try {
-  const projectRoot = path.join(__dirname, '..');
-  console.log('Project root:', projectRoot);
-  console.log('Available directories in project root:', fs.readdirSync(projectRoot));
-  
-  if (fs.existsSync(publicPath)) {
-    console.log('Public directory contents:', fs.readdirSync(publicPath));
-  }
-  
-  if (fs.existsSync(clientDistPath)) {
-    console.log('Client dist directory contents:', fs.readdirSync(clientDistPath));
-  }
-} catch (error) {
-  console.error('Error listing directories:', error.message);
-}
-
 // Log the current working directory and environment
 console.log('Current working directory:', process.cwd());
 console.log('Environment:', process.env.NODE_ENV || 'development');
 console.log('Port:', process.env.PORT || 5000);
-
-// Serve static files from client-dist directory
-console.log('📁 Client dist path:', clientDistPath);
-console.log('📁 Client dist exists:', fs.existsSync(clientDistPath));
-
-if (fs.existsSync(clientDistPath)) {
-  app.use(express.static(clientDistPath));
-  console.log('✅ Serving static files from:', clientDistPath);
-} else {
-  console.log('❌ Client dist directory not found, will serve fallback HTML');
-  console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
-}
 
 // Store connected users and messages
 const users = {};
@@ -188,21 +149,9 @@ app.get('/test', (req, res) => {
 
 // Serve React app for all other routes if build exists
 app.get('*', (req, res) => {
-  // FORCE FALLBACK FOR NOW - Remove this to use React build when ready
-  const forceFallback = true; // process.env.FORCE_FALLBACK === 'true';
+  console.log('✅ Serving embedded HTML chat application');
   
-  if (!forceFallback) {
-    const clientIndexPath = path.join(clientDistPath, 'index.html');
-    if (fs.existsSync(clientIndexPath)) {
-      console.log('✅ Serving from client-dist/index.html');
-      res.sendFile(clientIndexPath);
-      return;
-    }
-  }
-  
-  // Serve a beautiful HTML page with Socket.io chat functionality
-  console.log('✅ Serving fallback HTML');
-  
+  // Always serve the embedded HTML - no file dependencies
   res.send(`
     <!DOCTYPE html>
     <html>
