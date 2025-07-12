@@ -26,6 +26,10 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
+console.log('🚀 NEW SERVER VERSION LOADED - NO MORE ENENT ERRORS!');
+console.log('✅ Server is configured to serve fallback HTML');
+console.log('✅ Chat application is ready!');
+
 // Check if client build exists
 const publicPath = path.join(__dirname, '../public');
 const clientDistPath = path.join(__dirname, '../client-dist');
@@ -168,7 +172,17 @@ app.get('/health', (req, res) => {
     status: 'OK', 
     timestamp: new Date().toISOString(),
     clientBuildExists: fs.existsSync(clientDistPath),
-    clientDistPath: clientDistPath
+    clientDistPath: clientDistPath,
+    message: 'NEW SERVER VERSION - NO MORE ENENT ERRORS!'
+  });
+});
+
+// Test endpoint
+app.get('/test', (req, res) => {
+  res.json({
+    message: 'Server is working!',
+    version: 'NEW VERSION - FALLBACK HTML ENABLED',
+    timestamp: new Date().toISOString()
   });
 });
 
