@@ -29,15 +29,12 @@ app.use(express.json());
 // Check if client build exists - try public first, then client/dist
 const publicPath = path.join(__dirname, '../public');
 const clientDistPath = path.join(__dirname, '../client/dist');
-const indexHtmlPath = fs.existsSync(publicPath) ? path.join(publicPath, 'index.html') : path.join(clientDistPath, 'index.html');
 
 console.log('Checking for client build...');
 console.log('Public path:', publicPath);
 console.log('Client dist path:', clientDistPath);
-console.log('Index HTML path:', indexHtmlPath);
 console.log('Public directory exists:', fs.existsSync(publicPath));
 console.log('Client dist exists:', fs.existsSync(clientDistPath));
-console.log('Index HTML exists:', fs.existsSync(indexHtmlPath));
 
 // Debug: List all directories in the project root
 try {
@@ -172,8 +169,13 @@ app.get('/health', (req, res) => {
 
 // Serve React app for all other routes if build exists
 app.get('*', (req, res) => {
-  if (fs.existsSync(indexHtmlPath)) {
-    res.sendFile(indexHtmlPath);
+  const publicIndexPath = path.join(publicPath, 'index.html');
+  const clientIndexPath = path.join(clientDistPath, 'index.html');
+  
+  if (fs.existsSync(publicIndexPath)) {
+    res.sendFile(publicIndexPath);
+  } else if (fs.existsSync(clientIndexPath)) {
+    res.sendFile(clientIndexPath);
   } else {
     console.log('❌ Client build not found!');
     console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
