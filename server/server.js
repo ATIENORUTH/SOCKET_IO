@@ -28,7 +28,7 @@ app.use(express.json());
 
 // Check if client build exists
 const publicPath = path.join(__dirname, '../public');
-const clientDistPath = path.join(__dirname, '../client/dist');
+const clientDistPath = path.join(__dirname, '../client-dist');
 
 console.log('Checking for client build...');
 console.log('Public path:', publicPath);
