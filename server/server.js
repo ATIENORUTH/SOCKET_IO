@@ -64,18 +64,24 @@ console.log('Environment:', process.env.NODE_ENV || 'development');
 console.log('Port:', process.env.PORT || 5000);
 
 // Serve static files from the public folder if it exists, otherwise from client/dist
+let staticFilesServed = false;
+
 if (fs.existsSync(publicPath)) {
   app.use(express.static(publicPath));
   console.log('✅ Serving static files from:', publicPath);
+  staticFilesServed = true;
 } else if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   console.log('✅ Serving static files from:', clientDistPath);
+  staticFilesServed = true;
 } else if (fs.existsSync(renderClientPath)) {
   app.use(express.static(renderClientPath));
   console.log('✅ Serving static files from:', renderClientPath);
+  staticFilesServed = true;
 } else {
-  console.log('❌ Neither public nor client/dist directory found, serving fallback HTML');
+  console.log('❌ No client build directories found, will serve fallback HTML');
   console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
+  staticFilesServed = false;
 }
 
 // Store connected users and messages
@@ -196,6 +202,7 @@ app.get('*', (req, res) => {
   console.log('Client index exists:', fs.existsSync(clientIndexPath));
   console.log('Render index exists:', fs.existsSync(renderIndexPath));
   
+  // Try to serve from any available location
   if (fs.existsSync(publicIndexPath)) {
     console.log('✅ Serving from public/index.html');
     res.sendFile(publicIndexPath);
@@ -206,8 +213,11 @@ app.get('*', (req, res) => {
     console.log('✅ Serving from Render client/dist/index.html');
     res.sendFile(renderIndexPath);
   } else {
-    console.log('❌ Client build not found!');
+    console.log('❌ No index.html found in any location, serving fallback HTML');
     console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
+    
+    // Serve a beautiful HTML page with Socket.io chat functionality
+    console.log('✅ Serving fallback HTML');
     
     // Serve a beautiful HTML page with Socket.io chat functionality
     console.log('✅ Serving fallback HTML');

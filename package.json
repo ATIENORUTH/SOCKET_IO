@@ -7,6 +7,7 @@
     "start": "node server/server.js",
     "build": "node build-client.js",
     "build:render": "node render-build.js",
+    "build:simple": "node simple-build.js",
     "build:deploy": "node build-and-deploy.js",
     "dev": "cd client && npm run dev"
   },
