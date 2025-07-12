@@ -81,9 +81,18 @@ try {
   console.log('📋 Copying build files to public...');
   copyRecursiveSync(distDir, publicDir);
 
+  // Also ensure the client/dist directory exists for Render
+  console.log('📋 Ensuring client/dist exists for Render...');
+  const clientDistDir = path.join(clientDir, 'dist');
+  if (!fs.existsSync(clientDistDir)) {
+    fs.mkdirSync(clientDistDir, { recursive: true });
+  }
+
   console.log('✅ Client build completed successfully!');
   console.log('📂 Public directory contents:');
   console.log(fs.readdirSync(publicDir));
+  console.log('📂 Client dist directory contents:');
+  console.log(fs.readdirSync(clientDistDir));
 
 } catch (error) {
   console.error('❌ Build failed:', error.message);

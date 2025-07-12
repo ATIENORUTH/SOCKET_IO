@@ -36,6 +36,11 @@ console.log('Client dist path:', clientDistPath);
 console.log('Public directory exists:', fs.existsSync(publicPath));
 console.log('Client dist exists:', fs.existsSync(clientDistPath));
 
+// Also check the Render-specific path
+const renderClientPath = '/opt/render/project/src/client/dist';
+console.log('Render client path:', renderClientPath);
+console.log('Render client exists:', fs.existsSync(renderClientPath));
+
 // Debug: List all directories in the project root
 try {
   const projectRoot = path.join(__dirname, '..');
@@ -65,6 +70,9 @@ if (fs.existsSync(publicPath)) {
 } else if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   console.log('✅ Serving static files from:', clientDistPath);
+} else if (fs.existsSync(renderClientPath)) {
+  app.use(express.static(renderClientPath));
+  console.log('✅ Serving static files from:', renderClientPath);
 } else {
   console.log('❌ Neither public nor client/dist directory found, serving fallback HTML');
   console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
@@ -167,8 +175,10 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    clientBuildExists: fs.existsSync(publicPath),
-    clientBuildPath: publicPath
+    clientBuildExists: fs.existsSync(publicPath) || fs.existsSync(clientDistPath) || fs.existsSync(renderClientPath),
+    publicPath: publicPath,
+    clientDistPath: clientDistPath,
+    renderClientPath: renderClientPath
   });
 });
 
@@ -176,12 +186,15 @@ app.get('/health', (req, res) => {
 app.get('*', (req, res) => {
   const publicIndexPath = path.join(publicPath, 'index.html');
   const clientIndexPath = path.join(clientDistPath, 'index.html');
+  const renderIndexPath = path.join(renderClientPath, 'index.html');
   
   console.log('Checking for index.html files...');
   console.log('Public index path:', publicIndexPath);
   console.log('Client index path:', clientIndexPath);
+  console.log('Render index path:', renderIndexPath);
   console.log('Public index exists:', fs.existsSync(publicIndexPath));
   console.log('Client index exists:', fs.existsSync(clientIndexPath));
+  console.log('Render index exists:', fs.existsSync(renderIndexPath));
   
   if (fs.existsSync(publicIndexPath)) {
     console.log('✅ Serving from public/index.html');
@@ -189,6 +202,9 @@ app.get('*', (req, res) => {
   } else if (fs.existsSync(clientIndexPath)) {
     console.log('✅ Serving from client/dist/index.html');
     res.sendFile(clientIndexPath);
+  } else if (fs.existsSync(renderIndexPath)) {
+    console.log('✅ Serving from Render client/dist/index.html');
+    res.sendFile(renderIndexPath);
   } else {
     console.log('❌ Client build not found!');
     console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
@@ -390,7 +406,9 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`Client build exists: ${fs.existsSync(publicPath)}`);
+  console.log(`Public build exists: ${fs.existsSync(publicPath)}`);
+  console.log(`Client dist exists: ${fs.existsSync(clientDistPath)}`);
+  console.log(`Render client exists: ${fs.existsSync(renderClientPath)}`);
 }).on('error', (err) => {
   console.error('Server error:', err);
   process.exit(1);
