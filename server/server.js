@@ -53,6 +53,11 @@ try {
   console.error('Error listing directories:', error.message);
 }
 
+// Log the current working directory and environment
+console.log('Current working directory:', process.cwd());
+console.log('Environment:', process.env.NODE_ENV || 'development');
+console.log('Port:', process.env.PORT || 5000);
+
 // Serve static files from the public folder if it exists, otherwise from client/dist
 if (fs.existsSync(publicPath)) {
   app.use(express.static(publicPath));
@@ -172,15 +177,24 @@ app.get('*', (req, res) => {
   const publicIndexPath = path.join(publicPath, 'index.html');
   const clientIndexPath = path.join(clientDistPath, 'index.html');
   
+  console.log('Checking for index.html files...');
+  console.log('Public index path:', publicIndexPath);
+  console.log('Client index path:', clientIndexPath);
+  console.log('Public index exists:', fs.existsSync(publicIndexPath));
+  console.log('Client index exists:', fs.existsSync(clientIndexPath));
+  
   if (fs.existsSync(publicIndexPath)) {
+    console.log('✅ Serving from public/index.html');
     res.sendFile(publicIndexPath);
   } else if (fs.existsSync(clientIndexPath)) {
+    console.log('✅ Serving from client/dist/index.html');
     res.sendFile(clientIndexPath);
   } else {
     console.log('❌ Client build not found!');
     console.log('Available directories:', fs.readdirSync(path.join(__dirname, '..')));
     
     // Serve a beautiful HTML page with Socket.io chat functionality
+    console.log('✅ Serving fallback HTML');
     res.send(`
       <!DOCTYPE html>
       <html>
