@@ -3,7 +3,7 @@ services:
     name: socket-io-chat
     env: node
     buildCommand: npm install
-    startCommand: node server-minimal.js
+    startCommand: node server/server.js
     envVars:
       - key: NODE_ENV
         value: production
