@@ -2,7 +2,7 @@ services:
   - type: web
     name: socket-io-chat
     env: node
-    buildCommand: node render-build.js
+    buildCommand: npm install && npm run build
     startCommand: node server/server.js
     envVars:
       - key: NODE_ENV

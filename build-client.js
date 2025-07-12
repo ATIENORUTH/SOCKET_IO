@@ -43,15 +43,26 @@ try {
   }
 
   console.log('📁 Installing client dependencies...');
-  execSync('npm install --production=false', { 
-    cwd: clientDir, 
-    stdio: 'inherit' 
-  });
+  try {
+    execSync('npm install --production=false', { 
+      cwd: clientDir, 
+      stdio: 'inherit',
+      env: { ...process.env, NODE_ENV: 'production' }
+    });
+  } catch (installError) {
+    console.log('⚠️ Client dependencies install failed, trying without --production=false...');
+    execSync('npm install', { 
+      cwd: clientDir, 
+      stdio: 'inherit',
+      env: { ...process.env, NODE_ENV: 'production' }
+    });
+  }
 
   console.log('🔨 Building client...');
   execSync('npm run build', { 
     cwd: clientDir, 
-    stdio: 'inherit' 
+    stdio: 'inherit',
+    env: { ...process.env, NODE_ENV: 'production' }
   });
 
   // Check if dist directory was created
@@ -76,5 +87,6 @@ try {
 
 } catch (error) {
   console.error('❌ Build failed:', error.message);
+  console.error('Full error:', error);
   process.exit(1);
 } 
