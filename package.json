@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node start-app.js",
     "server": "node server/server.js",
-    "build": "node fix-render-build.js",
+    "build": "node build-render.js",
     "build-simple": "node build-simple.js",
     "vercel-build": "node build-vercel.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
