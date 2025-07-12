@@ -27,18 +27,10 @@ try {
 
   // Build client
   console.log('🔨 Building client...');
-  try {
-    execSync('cd client && npm run build', { 
-      stdio: 'inherit',
-      timeout: 120000
-    });
-  } catch (buildError) {
-    console.log('⚠️ Main build failed, trying fallback build...');
-    execSync('node create-fallback-build.js', { 
-      stdio: 'inherit',
-      timeout: 60000
-    });
-  }
+  execSync('cd client && npm run build', { 
+    stdio: 'inherit',
+    timeout: 120000
+  });
 
   // Create public directory
   if (!fs.existsSync(publicPath)) {
