@@ -4,10 +4,10 @@
   "description": "Real-time chat application with Socket.io",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "build": "echo 'Build completed'",
+    "start": "node start-app.js",
+    "server": "node server/server.js",
+    "build": "cd client && npm run build",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "install-all": "npm install && cd server && npm install && cd ../client && npm install"
   },
