@@ -152,26 +152,14 @@ app.get('*', (req, res) => {
   if (fs.existsSync(indexHtmlPath)) {
     res.sendFile(indexHtmlPath);
   } else {
-    // Try to build the client if it doesn't exist
-    console.log('🔨 Client build not found, attempting to build...');
-    try {
-      const { execSync } = require('child_process');
-      execSync('cd client && npm install && npx vite build --outDir dist', { 
-        stdio: 'pipe',
-        timeout: 60000 // 60 second timeout
-      });
-      console.log('✅ Client build created successfully!');
-      res.sendFile(indexHtmlPath);
-    } catch (error) {
-      console.log('❌ Failed to build client:', error.message);
-      res.json({ 
-        message: 'Server is running but client build is not ready yet. Please wait a moment and refresh.',
-        status: 'building',
-        clientBuildPath: clientBuildPath,
-        clientBuildExists: fs.existsSync(clientBuildPath),
-        availableDirectories: fs.readdirSync(path.join(__dirname, '..'))
-      });
-    }
+    console.log('❌ Client build not found!');
+    res.json({ 
+      message: 'Server is running but client build is not ready yet. Please wait a moment and refresh.',
+      status: 'error',
+      clientBuildPath: clientBuildPath,
+      clientBuildExists: fs.existsSync(clientBuildPath),
+      availableDirectories: fs.readdirSync(path.join(__dirname, '..'))
+    });
   }
 });
 
