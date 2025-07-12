@@ -1,0 +1,136 @@
+const fs = require('fs');
+const path = require('path');
+
+console.log('🛠️ Creating fallback client build...');
+
+try {
+  const clientPath = path.join(process.cwd(), 'client');
+  const distPath = path.join(clientPath, 'dist');
+  
+  // Create dist directory if it doesn't exist
+  if (!fs.existsSync(distPath)) {
+    fs.mkdirSync(distPath, { recursive: true });
+    console.log('Created dist directory');
+  }
+  
+  // Create a basic index.html
+  const indexHtml = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket.IO Chat</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+      .container { max-width: 800px; margin: 0 auto; }
+      .chat-container { border: 1px solid #ccc; border-radius: 5px; height: 400px; overflow-y: auto; padding: 10px; margin-bottom: 10px; }
+      .input-container { display: flex; gap: 10px; }
+      input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+      button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+      .message { margin: 5px 0; padding: 5px; background: #f8f9fa; border-radius: 3px; }
+      .system { background: #e9ecef; font-style: italic; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Socket.IO Chat</h1>
+      <div id="chat-container" class="chat-container"></div>
+      <div class="input-container">
+        <input type="text" id="username" placeholder="Enter your username" />
+        <button onclick="joinChat()">Join Chat</button>
+      </div>
+      <div class="input-container" id="message-container" style="display: none;">
+        <input type="text" id="message" placeholder="Type your message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+    
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+      const socket = io();
+      const chatContainer = document.getElementById('chat-container');
+      const messageContainer = document.getElementById('message-container');
+      const usernameInput = document.getElementById('username');
+      const messageInput = document.getElementById('message');
+      let username = '';
+      
+      function joinChat() {
+        username = usernameInput.value.trim();
+        if (username) {
+          socket.emit('user_join', username);
+          document.getElementById('username').disabled = true;
+          messageContainer.style.display = 'flex';
+          addMessage('System', 'You joined the chat', true);
+        }
+      }
+      
+      function sendMessage() {
+        const message = messageInput.value.trim();
+        if (message) {
+          socket.emit('send_message', { message });
+          messageInput.value = '';
+        }
+      }
+      
+      function addMessage(sender, message, isSystem = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message' + (isSystem ? ' system' : '');
+        messageDiv.innerHTML = '<strong>' + sender + ':</strong> ' + message;
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+      
+      socket.on('connect', () => {
+        addMessage('System', 'Connected to server', true);
+      });
+      
+      socket.on('disconnect', () => {
+        addMessage('System', 'Disconnected from server', true);
+      });
+      
+      socket.on('receive_message', (data) => {
+        addMessage(data.sender, data.message);
+      });
+      
+      socket.on('user_joined', (user) => {
+        addMessage('System', user.username + ' joined the chat', true);
+      });
+      
+      socket.on('user_left', (user) => {
+        addMessage('System', user.username + ' left the chat', true);
+      });
+      
+      messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+    </script>
+  </body>
+</html>`;
+  
+  const indexHtmlPath = path.join(distPath, 'index.html');
+  fs.writeFileSync(indexHtmlPath, indexHtml);
+  console.log('Created index.html');
+  
+  // Create assets directory
+  const assetsPath = path.join(distPath, 'assets');
+  if (!fs.existsSync(assetsPath)) {
+    fs.mkdirSync(assetsPath, { recursive: true });
+    console.log('Created assets directory');
+  }
+  
+  console.log('✅ Fallback build created successfully!');
+  console.log('Build location:', distPath);
+  console.log('Files created:');
+  const files = fs.readdirSync(distPath);
+  files.forEach(file => {
+    const filePath = path.join(distPath, file);
+    const stats = fs.statSync(filePath);
+    console.log(`  ${file} (${stats.isDirectory() ? 'dir' : stats.size + ' bytes'})`);
+  });
+  
+} catch (error) {
+  console.error('❌ Fallback build failed:', error.message);
+  process.exit(1);
+} 

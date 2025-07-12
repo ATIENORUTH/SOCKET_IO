@@ -152,14 +152,26 @@ app.get('*', (req, res) => {
   if (fs.existsSync(indexHtmlPath)) {
     res.sendFile(indexHtmlPath);
   } else {
-    console.log('❌ Client build not found!');
-    res.json({ 
-      message: 'Server is running but client build is not ready yet. Please wait a moment and refresh.',
-      status: 'error',
-      clientBuildPath: clientBuildPath,
-      clientBuildExists: fs.existsSync(clientBuildPath),
-      availableDirectories: fs.readdirSync(path.join(__dirname, '..'))
-    });
+    // Try to create fallback build if client build doesn't exist
+    console.log('❌ Client build not found, trying fallback build...');
+    try {
+      const { execSync } = require('child_process');
+      execSync('node create-fallback-build.js', { 
+        stdio: 'pipe',
+        timeout: 30000 // 30 second timeout
+      });
+      console.log('✅ Fallback build created successfully!');
+      res.sendFile(indexHtmlPath);
+    } catch (error) {
+      console.log('❌ Failed to create fallback build:', error.message);
+      res.json({ 
+        message: 'Server is running but client build is not ready yet. Please wait a moment and refresh.',
+        status: 'error',
+        clientBuildPath: clientBuildPath,
+        clientBuildExists: fs.existsSync(clientBuildPath),
+        availableDirectories: fs.readdirSync(path.join(__dirname, '..'))
+      });
+    }
   }
 });
 
