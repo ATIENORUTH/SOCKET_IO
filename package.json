@@ -2,11 +2,12 @@
   "name": "socket-io-chat",
   "version": "1.0.0",
   "description": "Real-time chat application with Socket.io",
-  "main": "server/app.js",
+  "main": "server/server.js",
   "scripts": {
-    "start": "node server/app.js",
-    "dev": "nodemon server/app.js",
-    "build": "echo 'Build complete - using embedded HTML'",
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "build": "npm install && cd client && npm install && npm run build",
+    "build-client": "cd client && npm install && npm run build",
     "test": "echo 'No tests specified'"
   },
   "keywords": ["socket.io", "chat", "real-time"],

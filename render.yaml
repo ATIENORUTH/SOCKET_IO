@@ -5,13 +5,20 @@ services:
     buildCommand: |
       echo "=== BUILDING APPLICATION ==="
       npm install
-      echo "✅ Dependencies installed"
-      echo "✅ Build complete - using embedded HTML"
+      echo "✅ Server dependencies installed"
+      cd client
+      npm install
+      echo "✅ Client dependencies installed"
+      npm run build
+      echo "✅ React frontend built to client/dist"
+      cd ..
+      echo "✅ Build complete - ready for deployment"
     startCommand: |
       echo "=== STARTING SERVER ==="
-      echo "✅ Using embedded HTML - no file dependencies"
+      echo "✅ Using server.js with static frontend"
+      echo "✅ Serving from client/dist"
       echo "✅ Server will run on PORT: $PORT"
-      node server/app.js
+      node server/server.js
     envVars:
       - key: NODE_ENV
         value: production
