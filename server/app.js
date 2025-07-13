@@ -89,7 +89,8 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    message: 'FRESH SERVER APP.JS - NO FILE DEPENDENCIES'
+    message: 'FRESH SERVER APP.JS - NO FILE DEPENDENCIES',
+    port: process.env.PORT || 5000
   });
 });
 
@@ -318,8 +319,20 @@ app.get('*', (req, res) => {
   `);
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
-  console.log(\`🚀 FRESH SERVER APP.JS RUNNING ON PORT \${PORT}\`);
+  console.log(`🚀 FRESH SERVER APP.JS RUNNING ON PORT ${PORT}`);
   console.log('✅ NO FILE DEPENDENCIES - EMBEDDED HTML ONLY');
+  console.log('✅ Deployment ready - all systems operational');
+});
+
+// Error handling for deployment
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
 }); 

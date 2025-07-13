@@ -2,16 +2,18 @@ services:
   - type: web
     name: week-5-web-sockets-assignment-ATIENORUTH-2
     env: node
-    buildCommand: npm install && cd client && npm install && npm run build && cd .. && cp -r client/dist client-dist
+    buildCommand: |
+      echo "=== BUILDING APPLICATION ==="
+      npm install
+      echo "✅ Dependencies installed"
+      echo "✅ Build complete - using embedded HTML"
     startCommand: |
-      echo "=== FRESH SERVER APP.JS - NO CACHE - NO FILE DEPENDENCIES ==="
-      echo "✅ This is a completely new server file"
-      echo "✅ Zero file dependencies - embedded HTML only"
-      echo "=== FRESH SERVER APP.JS RUNNING ON PORT 10000 ==="
-      echo "✅ NO FILE DEPENDENCIES - EMBEDDED HTML ONLY"
+      echo "=== STARTING SERVER ==="
+      echo "✅ Using embedded HTML - no file dependencies"
+      echo "✅ Server will run on PORT: $PORT"
       node server/app.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: CLIENT_URL
-        value: https://week-5-web-sockets-assignment-atienoruth-03k5.onrender.com
+      - key: PORT
+        value: 10000
